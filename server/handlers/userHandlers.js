@@ -70,6 +70,10 @@ const newUser = async (req, res) => {
     const { userName, email, password } = req.body;
     const client = new MongoClient(MONGO_URI);
 
+    if (!userName || !email || !password) {
+        res.status(400).json({ status: 400, message: "Information is missing" });
+    }
+
     try {
         await client.connect();
         const db = client.db(DB);

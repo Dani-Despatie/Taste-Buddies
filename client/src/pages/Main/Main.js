@@ -7,9 +7,9 @@ const Main = () => {
     const {loggedInUser} = useContext(LoggedInUserContext);
     
     return (
-        <Container>
-            {loggedInUser && <p>Welcome, {loggedInUser.userName}!</p>}
-            {!loggedInUser && <p>Welcome!</p>}
+        <Container className = "main">
+            {loggedInUser && <p>Welcome to main page, {loggedInUser.userName}!</p>}
+            {!loggedInUser && <p>Welcome to main page!</p>}
         </Container>
     )
 }
@@ -17,6 +17,5 @@ const Main = () => {
 export default Main;
 
 const Container = styled.div`
-    position: relative;
-    top: calc(var(--header-height) + 5px);
+  
 `;

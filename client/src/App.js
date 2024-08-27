@@ -9,11 +9,11 @@ import SideBar from "./SideBar"
 import Main from "./pages/Main/Main";
 import BrowseRecipes from "./pages/BrowseRecipes/BrowseRecipes";
 // import Recipe from "./pages/Recipe/Recipe";
-// import MyRecipes from "./pages/MyRecipes/MyRecipes";
+import MyRecipes from "./pages/MyRecipes/MyRecipes";
 // import Favourites from "./pages/Favourites/Favourites";
-// import CreateRecipe from "./pages/CreateRecipe/CreateRecipe";
+import CreateRecipe from "./pages/CreateRecipe/CreateRecipe";
 import SignIn from "./pages/SignIn/SignIn";
-// import SignUp from "./pages/SignUp/SignUp";
+import SignUp from "./pages/SignUp/SignUp";
 
 const App = () => {
 
@@ -27,11 +27,11 @@ const App = () => {
                 <Route path="/" element={<Main />} />
                 <Route path="/browse" element={<BrowseRecipes />} />
                 {/* <Route path="/recipe" element={<Recipe />} /> */}
-                {/* <Route path="/my-recipes" element={<MyRecipes />} /> */}
+                <Route path="/my-recipes" element={<MyRecipes />} />
                 {/* <Route path="/favourites" element={<Favourites />} /> */}
-                {/* <Route path="/create-recipe" element={<CreateRecipe />} /> */}
+                <Route path="/create-recipe" element={<CreateRecipe />} />
                 <Route path="/sign-in" element={<SignIn />} />
-                {/* <Route path="/sign-up" element={<SignUp />} /> */}
+                <Route path="/sign-up" element={<SignUp />} />
             </Routes>
 
             {/* <Footer/> */}

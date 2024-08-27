@@ -30,7 +30,7 @@ const SignIn = () => {
 
     return(
 
-        <Container>
+        <Container className="main">
             <form onSubmit={submitHandler}>
                 
                 <label htmlFor="email">Email: </label>
@@ -55,8 +55,7 @@ const SignIn = () => {
 }
 
 const Container = styled.div`
-    position: relative;
-    top: calc(var(--header-height) + 5px);
+    
 `;
 
 export default SignIn;

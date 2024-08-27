@@ -23,6 +23,7 @@ const HeaderContainer = styled.div`
     position: fixed;
     color: var(--light-background);
     border-bottom: 5px solid var(--green);
+    z-index: 2;
 `
 
 

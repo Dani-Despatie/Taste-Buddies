@@ -75,6 +75,10 @@ const newRecipe = async (req, res) => {
         return
     }
 
+    // Validation of ingredients list (shouldn't have blank spaces)
+
+    // Validation of instructions list
+
     // Creating the new recipe object
     const newRecipe = {
         _id: uuid.v4(),

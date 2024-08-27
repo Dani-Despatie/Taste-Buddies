@@ -5,7 +5,7 @@ import { LoggedInUserContext } from "./contexts/LoggedInUserContext";
 import { useContext } from "react";
 
 const SideBar = () => {
-    const {loggedInUser, login, logout} = useContext(LoggedInUserContext);
+    const {loggedInUser, logout} = useContext(LoggedInUserContext);
 
     return (
 
@@ -14,8 +14,11 @@ const SideBar = () => {
             {!loggedInUser && <NavButton to="/sign-up">Sign Up</NavButton>}
             {!loggedInUser && <NavButton to="/sign-in">Sign In</NavButton>}
 
-            {loggedInUser && <NavButton to="/" onClick={logout}>Log Out</NavButton>}
+            {loggedInUser && <NavButton>Favourites</NavButton>}
+            {loggedInUser && <NavButton to="/my-recipes">My Recipes</NavButton>}
             <NavButton to="/browse">Browse Recipes</NavButton>
+            {loggedInUser && <NavButton to="/" onClick={logout}>Log Out</NavButton>}
+
 
         </Container>
 
@@ -25,6 +28,7 @@ const SideBar = () => {
 
 const Container = styled.div`
     background-color: var(--dark-background);
+    color: var(--light-background);
     display: flex;
     position: fixed;
     right: 5px;
@@ -32,12 +36,15 @@ const Container = styled.div`
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    height: calc(100% - var(--header-height) + 5px);
+    height: calc(100% - var(--header-height));
+    max-width: 15%;
+    z-index: 1;
 
     @media (max-width: 600px) {
         flex-direction: row;
         width: 100%;
-        height: fit-content;
+        max-width: 100%;
+        height: 50px;
         top: var(--header-height);
         right: 0px;
         border-bottom: 5px solid var(--green);

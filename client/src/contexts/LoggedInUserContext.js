@@ -29,7 +29,6 @@ const LoggedInUserProvider = ({children}) => {
     }
 
     const logout = () => {
-        console.log(loggedInUser);
         setLoggedInUser(null);
     }
 
