@@ -14,7 +14,7 @@ const SideBar = () => {
             {!loggedInUser && <NavButton to="/sign-up">Sign Up</NavButton>}
             {!loggedInUser && <NavButton to="/sign-in">Sign In</NavButton>}
 
-            {loggedInUser && <NavButton>Favourites</NavButton>}
+            {loggedInUser && <NavButton to="/favourites">Favourites</NavButton>}
             {loggedInUser && <NavButton to="/my-recipes">My Recipes</NavButton>}
             <NavButton to="/browse">Browse Recipes</NavButton>
             {loggedInUser && <NavButton to="/" onClick={logout}>Log Out</NavButton>}

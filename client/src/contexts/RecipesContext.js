@@ -5,21 +5,26 @@ export const RecipesContext = createContext();
 const RecipesProvider = ({children}) => {
     const [recipes, setRecipes] = useState(null);
 
-    useEffect(() => {
-        const getRecipes = async () => {
-            try {
-                const res = await fetch("/recipes");
-                const { data } = await res.json();
-                setRecipes(data);
-            } catch(err) {
-                console.log(err);
-            }
+    const getRecipes = async () => {
+        try {
+            const res = await fetch("/recipes");
+            const { data } = await res.json();
+            setRecipes(data);
+        } catch(err) {
+            console.log(err);
         }
+    }
+
+    useEffect(() => {
         getRecipes();
     },[])
 
+    const refreshRecipes = () => {
+        getRecipes();
+    }
+
     return (
-        <RecipesContext.Provider value={{ recipes }} >
+        <RecipesContext.Provider value={{ recipes, refreshRecipes }} >
             {children}
         </RecipesContext.Provider>
     )

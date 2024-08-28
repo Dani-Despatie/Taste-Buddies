@@ -5,7 +5,7 @@ const PORT = 8000;
 const app = express();
 
 // require handler functions here
-const { getUsers, getUser, newUser, annotateRecipe, addFavourite, login } = require("./handlers/userHandlers");
+const { getUsers, getUser, newUser, annotateRecipe, addFavourite, removeFavourite, login, autoLogin } = require("./handlers/userHandlers");
 const { getRecipes, getRecipe, newRecipe, editRecipe } = require("./handlers/recipeHandlers");
 
 
@@ -25,7 +25,10 @@ app.post("/newUser", newUser);
 // PATCHES
 app.patch("/editRecipe", editRecipe);
 app.patch("/login", login);
+app.patch("/autoLogin", autoLogin)
 app.patch("/annotateRecipe", annotateRecipe);
+app.patch("/addFavourite", addFavourite);
+app.patch("/removeFavourite", removeFavourite);
 
 // DELETES
 

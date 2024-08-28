@@ -19,7 +19,7 @@ const MyRecipes = () => {
 
     return (
         <Container className="main">
-            {!loggedInUser && recipes && <p>Recipes Loading...</p>}
+            {!loggedInUser || !recipes && <p>Recipes Loading...</p>}
 
             {loggedInUser && loggedInUser.recipes.length === 0 && <p>You have no recipes!</p>}
 
@@ -30,7 +30,7 @@ const MyRecipes = () => {
                 const foundRecipe = findRecipe(recipeId);
 
                 if (foundRecipe) {
-                    return RecipeCard(foundRecipe, false); // false means no favourite button
+                    return RecipeCard(foundRecipe);
                 }
                 return <p>Recipe {recipeId} could not be found</p>
             })}
@@ -41,10 +41,11 @@ const MyRecipes = () => {
 export default MyRecipes;
 
 const Container = styled.div`
-    width: 90%
+    width: 90%;
+    text-align: center;
 `;
 
 
 const NavThing = styled(NavLink)`
-
+    margin: auto;
 `

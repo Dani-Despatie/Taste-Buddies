@@ -1,35 +1,39 @@
 import styled from "styled-components";
 import { LoggedInUserContext } from "../../contexts/LoggedInUserContext";
+import { RecipesContext } from "../../contexts/RecipesContext";
 import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 const CreateRecipe = () => {
-    const {loggedInUser} = useContext(LoggedInUserContext);
+    const {loggedInUser, refreshUser} = useContext(LoggedInUserContext);
+    const { refreshRecipes } = useContext(RecipesContext);
     const [ingredients, setIngredients] = useState([""]);
     const [instructions, setInstructions] = useState([""]);
     const [status, setStatus] = useState("idle");
+    const navigate = useNavigate();
 
+    // Handler functions for adding inputs for ingredients and instructions
     const addIngr = (event) => {
         event.preventDefault();
         setIngredients([...ingredients, ""]);
     };
-
     const addInstr = (event) => {
         event.preventDefault();
         setInstructions([...instructions, ""]);
     }
 
+    // Final submit handler
     const handleSubmit = async (event) => {
         event.preventDefault();
         setStatus("pending");
 
-        //TEMP for testing
         if (!loggedInUser) {
             setStatus("Not logged in");
         }
 
         const recipe = {
             name: event.target.name.value,
-            authorName,
+            authorName: loggedInUser.userName,
             type: event.target.type.value,
             description: event.target.description.value,
             amountMade: event.target.amountMade.value,
@@ -49,8 +53,11 @@ const CreateRecipe = () => {
             })
             const result = await res.json();
 
-            if (res.status === 200) {
+            if (res.status === 201) {
                 setStatus("idle");
+                refreshUser();
+                refreshRecipes();
+                navigate("/my-recipes");
             }
             else {
                 setStatus(result.message);
@@ -60,6 +67,7 @@ const CreateRecipe = () => {
         }
     };
 
+    // Handlers for ingredient or instruction content changing (updates the arrays)
     const handleIngrChange = (event) => {
         // Getting the index of the input which triggered the event
         const index = event.target.id.substr(4);
@@ -68,7 +76,6 @@ const CreateRecipe = () => {
         newIngredients[index] = event.target.value;
         setIngredients(newIngredients);
     };
-
     const handleInstrChange = (event) => {
         const index = event.target.id.substr(5);
 
@@ -92,7 +99,7 @@ const CreateRecipe = () => {
                     <option value="Soup">Soup</option>
                     <option value="Sauce">Sauce</option>
                     <option value="Finger Food">Finger Food</option>
-                    <option value="Desert">Desert</option>
+                    <option value="Dessert">Dessert</option>
 
                     <option value="Misc">Misc</option>
                 </select>
@@ -120,7 +127,7 @@ const CreateRecipe = () => {
                 <label htmlFor="tags">Tags: </label>
                 
                 
-                <button type="submit" disabled={status==="pending"}>Create!</button>
+                <button type="submit" disabled={status==="pending" || !loggedInUser}>Create!</button>
 
                 {status !== "idle" && <p>{status}</p>}
             </CreationForm>

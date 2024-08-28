@@ -11,7 +11,7 @@ const GlobalStyles = createGlobalStyle`
     }
 
     #root {
-        min-width: 100vw;
+        min-width: 100%;
         min-height: 100vh;
     }
 
@@ -25,10 +25,26 @@ const GlobalStyles = createGlobalStyle`
         position: relative;
         top: calc(var(--header-height) + 5px);
         padding: 10px;
+        width: 85%;
 
         @media (max-width: 600px) {
             top: calc(var(--header-height) + 55px);
         }
+    }
+
+    button {
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .add {
+        background-color: green;
+    }
+    .remove {
+        background-color: red;
     }
 
     a {

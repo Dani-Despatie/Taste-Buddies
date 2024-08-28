@@ -8,6 +8,7 @@ const { MONGO_URI } = process.env;
 // Names of the Database and Collections (lower risk of typos)
 const DB = "TasteBuddies";
 const users = "users";
+const recipes = "recipes";
 
 // GET Endpoints
 
@@ -124,7 +125,95 @@ const annotateRecipe = async (req, res) => {
 };
 
 const addFavourite = async (req, res) => {
+    const { _id, favId } = req.body;
 
+    if (!favId || !_id) {
+        res.status(400).json({ status: 400, message: "Information missing" });
+        return;
+    }
+
+    const client = new MongoClient(MONGO_URI);
+    try {
+
+        await client.connect();
+        const db = client.db(DB);
+
+        const user = await db.collection(users).findOne({ _id });
+        if (!user) {
+            res.status(404).json({ status: 404, message: "User not found" });
+            return;
+        }
+
+        // Checking if the user already has this recipe in their favourites
+        if (user.favourites.includes(favId)) {
+            res.status(400).json({ status: 400, message: "Already in favourites" });
+            return;
+        }
+
+        // Checking that the favId actually points to a real recipe
+        const recipe = await db.collection(recipes).findOne({ _id: favId });
+        if (!recipe) {
+            res.status(404).json({ status: 404, message: "Recipe does not exist" });
+            return;
+        }
+
+        await db.collection(users).updateOne({ _id }, { $push: { favourites: favId } });
+
+        // Compiling final user data to send to front end
+        user.favourites.push(favId);
+
+        res.status(200).json({ status: 200, message: "Recipe added to favourites successfully", data: user });
+    } catch (err) {
+        console.log(err);
+        res.status(502).json({ status: 502, message: err.message });
+    } finally {
+        client.close();
+    }
+
+};
+
+const removeFavourite = async (req, res) => {
+    const { _id, favId } = req.body;
+
+    if (!_id || !favId) {
+        res.status(400).json({ status: 400, message: "Information missing" });
+        return;
+    }
+
+    const client = new MongoClient(MONGO_URI);
+    try {
+        await client.connect();
+        const db = client.db(DB);
+
+        const user = await db.collection(users).findOne({ _id });
+        if (!user) {
+            res.status(404).json({ status: 404, message: "User not found" });
+            return;
+        }
+
+        // Checking that the recipe is in favourites currently
+        const index = user.favourites.findIndex((id) => {
+            return id = favId;
+        });
+        if (index === -1) {
+            res.status(404).json({ status: 404, message: "Recipe was not found in favourites" });
+            return;
+        }
+
+        const result = await db.collection(users).updateOne({ _id }, { $pull: { favourites: favId } });
+        if (result.modifiedCount === 0) {
+            res.status(500).json({ status: 500, message: "Something went wrong removing the favourite" });
+            return;
+        }
+        // removing the recipe from favourites
+        user.favourites = user.favourites.splice(index, 1);
+        res.status(200).json({ status: 200, message: "Favourite removed successfully", data: user });
+    } catch (err) {
+        console.log(err);
+        res.status(502).json({ status: 502, message: err.message });
+    } finally {
+        client.close()
+    }
 };
 
 const login = async (req, res) => {
@@ -173,6 +262,54 @@ const login = async (req, res) => {
 
 };
 
+const autoLogin = async (req, res) => {
+    const { token } = req.body;
+    const email = token.email;
+    const time = Date.now() - token.date;
+    if (!email) {
+        res.status(400).json({ status: 400, message: "Email not given" });
+        return;
+    }
+    if (!time || time < 0) {
+        res.status(400).json({ status: 400, message: "Invalid time in token" });
+        return;
+    }
+
+    if (time > 86400000) {
+        res.status(401).json({ status: 401, message: "Login token expired" });
+        return;
+    }
+
+    const client = new MongoClient(MONGO_URI);
+    try {
+        await client.connect();
+        const db = client.db(DB);
+
+        // Finding the user
+        const foundUser = await db.collection(users).findOne({ email: email });
+        if (!foundUser) {
+            res.status(404).json({ status: 404, message: "User not found" });
+            return;
+        }
+
+        // if user is found
+        const userData = {
+            _id: foundUser._id,
+            userName: foundUser.userName,
+            email: foundUser.email,
+            recipes: foundUser.recipes,
+            favourites: foundUser.favourites
+        }
+        res.status(200).json({ status: 200, data: userData });
+
+    } catch (err) {
+        console.log(err);
+        res.status(502).json({ status: 502, message: err.message });
+    } finally {
+        client.close();
+    }
+}
+
 
 
 // Exporting Functions: 
@@ -182,5 +319,7 @@ module.exports = {
     newUser,
     annotateRecipe,
     addFavourite,
-    login
+    removeFavourite,
+    login,
+    autoLogin
 }
