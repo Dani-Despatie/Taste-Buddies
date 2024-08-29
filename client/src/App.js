@@ -9,6 +9,7 @@ import SideBar from "./SideBar"
 import Main from "./pages/Main/Main";
 import BrowseRecipes from "./pages/BrowseRecipes/BrowseRecipes";
 import Recipe from "./pages/Recipe/Recipe";
+import EditRecipe from "./pages/EditRecipe/EditRecipe";
 import MyRecipes from "./pages/MyRecipes/MyRecipes";
 import Favourites from "./pages/Favourites/Favourites";
 import CreateRecipe from "./pages/CreateRecipe/CreateRecipe";
@@ -27,6 +28,7 @@ const App = () => {
                 <Route path="/" element={<Main />} />
                 <Route path="/browse" element={<BrowseRecipes />} />
                 <Route path="/recipe/:id" element={<Recipe />} />
+                <Route path="/edit-recipe/:id" element={<EditRecipe/>} />
                 <Route path="/my-recipes" element={<MyRecipes />} />
                 <Route path="/favourites" element={<Favourites />} />
                 <Route path="/create-recipe" element={<CreateRecipe />} />

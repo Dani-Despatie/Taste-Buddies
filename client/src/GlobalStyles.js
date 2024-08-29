@@ -32,7 +32,7 @@ const GlobalStyles = createGlobalStyle`
         }
     }
 
-    button {
+    .add, .remove, .edit {
         padding: 10px;
         border: none;
         border-radius: 5px;
@@ -45,6 +45,9 @@ const GlobalStyles = createGlobalStyle`
     }
     .remove {
         background-color: red;
+    }
+    .edit {
+        background-color: yellow;
     }
 
     a {

@@ -9,6 +9,7 @@ const CreateRecipe = () => {
     const { refreshRecipes } = useContext(RecipesContext);
     const [ingredients, setIngredients] = useState([""]);
     const [instructions, setInstructions] = useState([""]);
+    const [tags, setTags] = useState([""]);
     const [status, setStatus] = useState("idle");
     const navigate = useNavigate();
 
@@ -20,6 +21,10 @@ const CreateRecipe = () => {
     const addInstr = (event) => {
         event.preventDefault();
         setInstructions([...instructions, ""]);
+    };
+    const addTag = (event) => {
+        event.preventDefault();
+        setTags([...tags, ""]);
     }
 
     // Final submit handler
@@ -29,6 +34,7 @@ const CreateRecipe = () => {
 
         if (!loggedInUser) {
             setStatus("Not logged in");
+            return;
         }
 
         const recipe = {
@@ -39,7 +45,7 @@ const CreateRecipe = () => {
             amountMade: event.target.amountMade.value,
             ingredients,
             instructions,
-            tags: []
+            tags
         }
 
         // Sending to backend
@@ -83,6 +89,13 @@ const CreateRecipe = () => {
         newInstructions[index] = event.target.value;
         setInstructions(newInstructions);
     };
+    const handleTagChange = (event) => {
+        const index = event.target.id.substr(3);
+
+        const newTag = [...tags];
+        newTag[index] = event.target.value;
+        setTags(newTag);
+    }
 
     return (
         <Container className="main">
@@ -125,7 +138,11 @@ const CreateRecipe = () => {
                 <button type="button" onClick={addInstr}>+ Input</button>
 
                 <label htmlFor="tags">Tags: </label>
-                
+                {tags.map((tag, index) => {
+                    const id = `tag${index}`;
+                    return <input key={id} id={id} placeholder={id} onChange={handleTagChange} />
+                })}
+                <button type="button" onClick={addTag}>+ Tag</button>
                 
                 <button type="submit" disabled={status==="pending" || !loggedInUser}>Create!</button>
 

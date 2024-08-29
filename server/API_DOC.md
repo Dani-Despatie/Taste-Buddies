@@ -22,7 +22,7 @@
     favourites: [Recipe IDs]
 }
 ```
-
+ 
 ### Recipe
 
 ```js

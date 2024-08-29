@@ -76,8 +76,26 @@ const newRecipe = async (req, res) => {
     }
 
     // Validation of ingredients list (shouldn't have blank spaces)
-
+    const filteredIngredients = [];
+    ingredients.forEach((ingr) => {
+        if (ingr.length > 0) {
+            filteredIngredients.push(ingr);
+        }
+    });
     // Validation of instructions list
+    const filteredInstructions = [];
+    instructions.forEach((instr) => {
+        if (instr.length > 0) {
+            filteredInstructions.push(instr);
+        }
+    });
+    // Validation of tags list
+    const filteredTags = [];
+    tags.forEach((tag) => {
+        if (tag.length > 0) {
+            filteredTags.push(tag);
+        }
+    });
 
     // Creating the new recipe object
     const newRecipe = {
@@ -88,8 +106,8 @@ const newRecipe = async (req, res) => {
         type,
         description,
         amountMade,
-        ingredients,
-        instructions,
+        ingredients: filteredIngredients,
+        instructions: filteredInstructions,
         tags,
         ratings: []
     }
@@ -131,7 +149,72 @@ const newRecipe = async (req, res) => {
 // PATCH Endpoints
 
 const editRecipe = async (req, res) => {
+    const { _id, name, type, description, amountMade, ingredients, instructions, tags } = req.body;
+    if (!_id || !name || !type || !description || !amountMade || !ingredients || !instructions || !tags) {
+        res.status(400).json({ status: 400, message: "Information missing" });
+        return;
+    }
 
+    // Removing empty spaces from arrays
+    const filteredIngredients = [];
+    ingredients.forEach((ingr) => {
+        if (ingr.length > 0) 
+            filteredIngredients.push(ingr);
+    });
+
+    const filteredInstructions = [];
+    instructions.forEach((instr) => {
+        if (instr.length > 0)
+            filteredInstructions.push(instr);
+    });
+
+    const filteredTags = [];
+    tags.forEach((tag) => {
+        if (tag.length > 0) 
+            filteredTags.push(tag);
+    });
+
+    const client = new MongoClient(MONGO_URI);
+    try {
+        await client.connect();
+        const db = client.db(DB);
+
+        // Finding the original recipe (for it's authorName, date, and ratings values)
+        const originalRecipe = await db.collection(recipes).findOne({ _id });
+        if (!originalRecipe) {
+            res.status(404).json({ status: 404, message: "Original recipe not found in database" });
+            return;
+        }
+
+        // Creating the new recipe object
+        const recipe = {
+            _id,
+            name,
+            authorName: originalRecipe.authorName,
+            date: originalRecipe.date,
+            type,
+            description,
+            amountMade,
+            ingredients: filteredIngredients,
+            instructions: filteredInstructions,
+            tags: filteredTags,
+            ratings: originalRecipe.ratings
+        }
+
+        const result = await db.collection(recipes).replaceOne({ _id }, recipe);
+        if (result.modifiedCount === 0) {
+            res.status(400).json({ status: 400, message: "No change was made to the recipe" });
+            return;
+        }
+
+        res.status(200).json({ status: 200, message: "Recipe changed successfully", data: recipe });
+    } catch (err) {
+        console.log(err);
+        res.status(502).json({ status: 502, message: err.message });
+    } finally {
+        client.close();
+    }
+    
 };
 
 // Exporting functions:

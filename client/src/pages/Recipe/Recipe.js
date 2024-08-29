@@ -3,16 +3,18 @@ import { useEffect, useContext, useState } from "react";
 import { LoggedInUserContext } from "../../contexts/LoggedInUserContext";
 import { RecipesContext } from "../../contexts/RecipesContext";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
 const Recipe = () => {
     const { id } = useParams();
-    const { loggedInUser, refreshUser, addFavourite, removeFavourite } = useContext(LoggedInUserContext);
+    const { loggedInUser, addFavourite, removeFavourite } = useContext(LoggedInUserContext);
     const { recipes } = useContext(RecipesContext);
     const [recipe, setRecipe] = useState(null);
     const [isFavourite, setIsFavourite] = useState(false);
     const [isUserMade, setIsUserMade] = useState(false);
     const [status, setStatus] = useState("idle");
+    const navigate = useNavigate();
 
     // Finding the recipe from the provided ID
     useEffect(() => {
@@ -59,9 +61,13 @@ const Recipe = () => {
         setStatus("idle");
     }
 
+    const toggleEdit = () => {
+        navigate(`/edit-recipe/${id}`);
+    }
 
-    // Recipe page component ----------------------
-    const Recipe = () => {
+
+    // Recipe page component ------------------------
+    const recipeMenu = () => {
         return (
             <>
                 <h2>{recipe.name}</h2>
@@ -70,6 +76,7 @@ const Recipe = () => {
                 {isFavourite && <button className="remove" onClick={unfavourite} disabled={status !== "idle"}>Remove from Favourites</button>}
                 {loggedInUser && !isFavourite && !isUserMade && <button className="add" onClick={favourite} disabled={status !== "idle"}>Add to Favourites!</button>}
                 {!loggedInUser && <button disabled>Log in to Favourite!</button>}
+                {loggedInUser && isUserMade && <button className="edit" onClick={toggleEdit} disabled={status !=="idle"}>Edit Recipe</button>}
 
                 <h3>Description: </h3>
                 <p>{recipe.description}</p>
@@ -89,14 +96,22 @@ const Recipe = () => {
                         return <li key={instr}>{instr}</li>
                     })}
                 </ul>
+
+                <h3>Tags: </h3>
+                <ul>
+                    {recipe.tags.map((tag) => {
+                        return <li key={tag}>{tag}</li>
+                    })}
+                </ul>
             </>
         )
     };
 
+
     return (
         <Container className="main">
             {!recipe && <p>Loading recipe...</p>}
-            {recipe && Recipe()}
+            {recipe && recipeMenu()}
         </Container>
     )
 }

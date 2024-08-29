@@ -159,10 +159,16 @@ const addFavourite = async (req, res) => {
 
         await db.collection(users).updateOne({ _id }, { $push: { favourites: favId } });
 
-        // Compiling final user data to send to front end
+        // Compiling final user data to send to front end (makes front end user easier to update)
         user.favourites.push(favId);
-
-        res.status(200).json({ status: 200, message: "Recipe added to favourites successfully", data: user });
+        const newUser = {
+            _id: user._id,
+            userName: user.userName,
+            email: user.email,
+            recipes: user.recipes,
+            favourites: user.favourites
+        }
+        res.status(200).json({ status: 200, message: "Recipe added to favourites successfully", data: newUser });
     } catch (err) {
         console.log(err);
         res.status(502).json({ status: 502, message: err.message });
@@ -205,9 +211,17 @@ const removeFavourite = async (req, res) => {
             res.status(500).json({ status: 500, message: "Something went wrong removing the favourite" });
             return;
         }
-        // removing the recipe from favourites
-        user.favourites = user.favourites.splice(index, 1);
-        res.status(200).json({ status: 200, message: "Favourite removed successfully", data: user });
+        // removing the recipe from favourites and sending to front end (makes front end updates easier)
+        user.favourites.splice(index, 1);
+        const newUser = {
+            _id: user._id,
+            userName: user.userName,
+            email: user.email,
+            recipes: user.recipes,
+            favourites: user.favourites
+        }
+
+        res.status(200).json({ status: 200, message: "Favourite removed successfully", data: newUser });
     } catch (err) {
         console.log(err);
         res.status(502).json({ status: 502, message: err.message });
