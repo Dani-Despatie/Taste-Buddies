@@ -5,38 +5,71 @@ import { useContext, useState, useEffect } from "react";
 import RecipeCard from "./RecipeCard";
 
 const BrowseRecipes = () => {
-    const {loggedInUser} = useContext(LoggedInUserContext);
-    const {recipes} = useContext(RecipesContext);
+    const { loggedInUser } = useContext(LoggedInUserContext);
+    const { recipes } = useContext(RecipesContext);
     const [filter, setFilter] = useState(null);
+    const [search, setSearch] = useState(null);
     const [filteredRecipes, setFilteredRecipes] = useState(null);
 
-    const handleChange = (event) => {
+    // HANDLERS ---------------------------------------------------
+    // Handles the changing of recipe type filter
+    const handleFilterChange = (event) => {
         if (event.target.value === "Any") setFilter(null);
         else setFilter(event.target.value);
     };
 
-    // Making the displayed recipes change based on filter
+    // Handles submission of the search bar contents
+    const handleSearchSubmit = (event) => {
+        event.preventDefault();
+        if (event.target.search.value === "")
+            setSearch(null);
+        else
+            setSearch(event.target.search.value);
+    };
+    // ------------------------------------------------------------
+    // Filtering based on filters AND searched string
     useEffect(() => {
-        if (filter == null) {
-            setFilteredRecipes(recipes);
+        if (!recipes) {
+            return;
+        }
+        // Filtering based on recipe type
+        let filterMatches = [];
+        if (!filter) {
+            filterMatches = recipes;
         }
         else {
-            const newRecipeArray = [];
             recipes.forEach((recipe) => {
                 if (recipe.type === filter) {
-                    newRecipeArray.push(recipe);
+                    filterMatches.push(recipe);
                 }
             })
-            setFilteredRecipes(newRecipeArray);
         }
-    },[recipes, filter]);
+        // Filtering again, based on search string
+        let searchMatches = [];
+        if (!search) {
+            searchMatches = filterMatches;
+        }
+        else {
+            filterMatches.forEach((recipe) => {
+                const name = recipe.name.toLowerCase();
+                if (name.includes(search.toLowerCase())) {
+                    searchMatches.push(recipe);
+                }
+            })
+        }
+
+        setFilteredRecipes(searchMatches);
+    }, [recipes, filter, search])
 
     return (
         <Container className="main">
 
-            <FilterForm>
+            <FilterForm onSubmit={handleSearchSubmit}>
+                <label htmlFor="search">Search By Name: </label>
+                <input id='search' />
+                <button type='submit' >Search</button> <br />
                 <label htmlFor="filter">Looking through recipes of type:  </label>
-                <select name="filter" id="filter" onChange={handleChange}>
+                <select name="filter" id="filter" onChange={handleFilterChange}>
                     <option value="Any">Any</option>
                     <option value="Main Dish">Main Dish</option>
                     <option value="Apetizer">Apetizer</option>
@@ -49,7 +82,7 @@ const BrowseRecipes = () => {
             </FilterForm>
 
             {filteredRecipes && filteredRecipes.map((recipe) => {
-                return RecipeCard(recipe); 
+                return RecipeCard(recipe);
             })}
 
             {filteredRecipes && filteredRecipes.length === 0 && <p>No {filter} recipes found</p>}
@@ -62,7 +95,7 @@ const Container = styled.div`
 `;
 
 const FilterForm = styled.form`
-    select {
+    select, button {
         background-color: var(--button-green);
         border: 2px solid var(--green);
         border-radius: 5px;
@@ -73,6 +106,24 @@ const FilterForm = styled.form`
         padding: 5px;
         margin-left: 15px;
     }
+    select:hover, button:hover {
+        scale: 1.03;
+    }
+
+    input {
+        line-height: 1.5rem;
+        font-family: inherit;
+        font-size: inherit;
+        margin: 10px;
+    }
+    input:hover {
+        outline: 1px solid var(--green);
+    }
+    input:focus {
+        outline: 2px solid var(--green);
+    }
+    
+
 `;
 
 export default BrowseRecipes;

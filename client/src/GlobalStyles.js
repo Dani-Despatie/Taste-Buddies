@@ -10,7 +10,7 @@ const GlobalStyles = createGlobalStyle`
 
         --shadow: 2px 2px 4px #909090;
 
-        --header-height: 60px;
+        --header-height: 90px;
     }
 
     #root {
@@ -31,6 +31,7 @@ const GlobalStyles = createGlobalStyle`
         padding: 10px 30px;
         width: calc(75% - 20px);
         margin-left: calc(10% - 50px);
+        padding-bottom: 40px;
 
         @media (max-width: 600px) {
             top: calc(var(--header-height) + 55px);

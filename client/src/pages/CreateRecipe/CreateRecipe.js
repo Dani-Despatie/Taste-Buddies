@@ -181,6 +181,9 @@ const Container = styled.div`
         font-family: inherit;
         margin-left: 55px;
     }
+    #description:hover {
+        outline: 1px solid var(--green);
+    }
     #description:focus {
         outline: 2px solid var(--green);
     }
@@ -192,7 +195,9 @@ const Container = styled.div`
         height: 1.5rem;
         font-size: 1rem;
         width: 75%;
-        
+    }
+    input:hover {
+        outline: 1px solid var(--green);
     }
     input:focus {
         outline: 2px solid var(--green);

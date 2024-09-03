@@ -37,7 +37,7 @@ const Container = styled.div`
     justify-content: center;
     flex-direction: column;
     height: calc(100% - var(--header-height));
-    max-width: 15%;
+    width: 160px;
     z-index: 1;
 
     @media (max-width: 600px) {

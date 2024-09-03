@@ -6,7 +6,9 @@ import { NavLink } from "react-router-dom";
 const Header = () => {
     return (
         <HeaderContainer>
-            <NavLink to="/">I'm a logo</NavLink>
+            <NavLink to="/">
+                <Logo src='https://res.cloudinary.com/dfszibmt6/image/upload/v1725377869/mx55bradgm9zz1wg8fqc.png' alt="Logo"/>
+            </NavLink>
         </HeaderContainer>
     )
 }
@@ -24,22 +26,21 @@ const HeaderContainer = styled.div`
     color: var(--light-background);
     border-bottom: 5px solid var(--green);
     z-index: 2;
+
+    NavLink
+
 `
 
 
 
 const Logo = styled.img`
-    max-width: 200px;
-`;
+    margin-right: 150px;
+    max-width: 100%;
+    transition: scale 0.2s;
 
-
-
-const Burger = styled.div`
-    background-color: var(--red);
-    width: fit-content;
-    padding: 5px 10px;
-    margin: 0px 10px;
-    border-radius: 5px;
+    &:hover {
+        scale: 1.02;
+    }
 `;
 
 export default Header;
