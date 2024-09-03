@@ -7,8 +7,8 @@ import { Navigate } from "react-router-dom";
 
 const EditRecipe = () => {
     const { id } = useParams();
-    const {loggedInUser} = useContext(LoggedInUserContext);
-    const {recipes, refreshRecipes} = useContext(RecipesContext);
+    const { loggedInUser } = useContext(LoggedInUserContext);
+    const { recipes, refreshRecipes } = useContext(RecipesContext);
     const [recipe, setRecipe] = useState(null);
     const [status, setStatus] = useState("start");
     const [instructions, setInstructions] = useState(null);
@@ -34,7 +34,7 @@ const EditRecipe = () => {
             setTags(recipe.tags);
             setStatus("idle");
         }
-    },[recipe])
+    }, [recipe])
 
     // HANDLERS -------------------------------------------
 
@@ -53,7 +53,7 @@ const EditRecipe = () => {
 
     const handleIngrChange = (event) => {
         const index = event.target.id.substr(4);
-        const newIngredients = [...instructions];
+        const newIngredients = [...ingredients];
         newIngredients[index] = event.target.value;
         setIngredients(newIngredients);
     }
@@ -118,7 +118,7 @@ const EditRecipe = () => {
     const editForm = () => {
 
         return (
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} className="recipe-form">
                 <h2>{recipe.name}</h2>
 
                 <label htmlFor="type">Type of Food: </label>
@@ -134,33 +134,39 @@ const EditRecipe = () => {
                 </select>
 
                 <label htmlFor="description">Description: </label>
-                <input id="description" defaultValue={recipe.description}/>
+                <textarea id="description" defaultValue={recipe.description} />
 
                 <label htmlFor="amountMade">Amount Made/Batch: </label>
-                <input id="amountMade" defaultValue={recipe.amountMade}/>
+                <input id="amountMade" defaultValue={recipe.amountMade} />
 
                 <label htmlFor="ingr0">Ingredients: </label>
-                {ingredients.map((ingr, index) => {
-                    const id = `ingr${index}`;
-                    return <input key={id} id={id} defaultValue={ingr} onChange={handleIngrChange} />
-                })}
+                <ul>
+                    {ingredients.map((ingr, index) => {
+                        const id = `ingr${index}`;
+                        return <li><input key={id} id={id} defaultValue={ingr} onChange={handleIngrChange} /> </li>
+                    })}
+                </ul>
                 <button onClick={addIngr}>+ Input</button>
 
                 <label htmlFor="instr0">Instructions: </label>
-                {instructions.map((instr, index) => {
-                    const id = `instr${index}`;
-                    return <input key={id} id={id} defaultValue={instr} onChange={handleInstrChange} />
-                })}
+                <ol>
+                    {instructions.map((instr, index) => {
+                        const id = `instr${index}`;
+                        return <li><input key={id} id={id} defaultValue={instr} onChange={handleInstrChange} /></li>
+                    })}
+                </ol>
                 <button onClick={addInstr}>+ Input</button>
 
                 <label htmlFor="tags">Tags: </label>
-                {tags.map((tag, index) => {
-                    const id = `tag${index}`;
-                    return <input key={id} id={id} defaultValue={tag} onChange={handleTagChange} />
-                })}
+                <ul>
+                    {tags.map((tag, index) => {
+                        const id = `tag${index}`;
+                        return <li><input key={id} id={id} defaultValue={tag} onChange={handleTagChange} /></li>
+                    })}
+                </ul>
                 <button onClick={addTag}>+ Tag</button>
 
-                <button type="submit" disabled={status==="pending" || !loggedInUser}>Save Changes!</button>
+                <button type="submit" disabled={status === "pending" || !loggedInUser}>Save Changes!</button>
 
                 {status !== "idle" && status !== "pending" && status !== "start" && <p>{status}</p>}
             </Form>
@@ -178,7 +184,82 @@ const EditRecipe = () => {
 export default EditRecipe;
 
 const Container = styled.div`
+    #description {
+        max-width: 65%;
+        height: 6rem;
+        font-family: inherit;
+        margin-left: 55px;
+    }
+    #description:focus {
+        outline: 2px solid var(--green);
+    }
+    input {
+        height: 1.5rem;
+        font-size: 1rem;
+        width: 75%;
+        
+    }
+    input:focus {
+        outline: 2px solid var(--green);
+    }
 
+    select {
+        max-width: 30%;
+        height: 2rem;
+        font-size: 1rem;
+        font-family: inherit;
+        margin-left: 55px;
+        background-color: var(--button-green);
+        border: 1px solid var(--green);
+        border-radius: 5px;
+        box-shadow: var(--shadow);
+    }
+    select:focus {
+        outline: 2px solid var(--green);
+    }
+
+    #amountMade {
+        max-width: 30%;
+        margin-left: 55px;
+    }
+
+    button {
+        width: 200px;
+        margin-left: 55px;
+        font-family: inherit;
+        font-size: 1rem;
+        background-color: var(--button-green);
+        border: 1px solid var(--green);
+        border-radius: 5px;
+        box-shadow: var(--shadow);
+    }
+    button:focus {
+        outline: 2px solid var(--green);
+    }
+
+    .submit {
+        margin-top: 20px;
+    }
+
+    ul, ol {
+        margin: 10px;
+    }
+    ul {
+        list-style-type: circle;
+    }
+    ol {
+        font-size: 0.8em;
+    }
+    li {
+        margin: 5px;
+    }
+
+    .status-message {
+        color: var(--red);
+        width: fit-content;
+        padding: 10px;
+        border: 2px solid var(--red);
+    }
 `;
 
 const Form = styled.form`

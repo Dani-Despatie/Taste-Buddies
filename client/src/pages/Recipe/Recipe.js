@@ -34,7 +34,7 @@ const Recipe = () => {
             const isFav = loggedInUser.favourites.includes(recipe._id);
             setIsFavourite(isFav);
         }
-    },[loggedInUser, recipe]);
+    }, [recipe]);
 
     // Determining if the recipe was made by the user (can't favourite/unfavourite the recipe)
     useEffect(() => {
@@ -42,7 +42,7 @@ const Recipe = () => {
             const isUsers = loggedInUser.recipes.includes(recipe._id);
             setIsUserMade(isUsers);
         }
-    },[loggedInUser, recipe]);
+    }, [recipe]);
 
     // HANDLER FUNCTIONS --------------------------
     // Favourite handler
@@ -54,7 +54,7 @@ const Recipe = () => {
     }
 
     // Unfavourite handler
-    const unfavourite = async() => {
+    const unfavourite = async () => {
         setStatus("pending");
         setIsFavourite(false);
         await removeFavourite(recipe._id);
@@ -70,39 +70,47 @@ const Recipe = () => {
     const recipeMenu = () => {
         return (
             <>
-                <h2>{recipe.name}</h2>
-                <p>Made by {recipe.authorName}</p>
+                <div className="intro">
+                    <div className="title">
+                        <h2>{recipe.name}</h2>
+                        <p>Made by {recipe.authorName}</p>
 
-                {isFavourite && <button className="remove" onClick={unfavourite} disabled={status !== "idle"}>Remove from Favourites</button>}
-                {loggedInUser && !isFavourite && !isUserMade && <button className="add" onClick={favourite} disabled={status !== "idle"}>Add to Favourites!</button>}
-                {!loggedInUser && <button disabled>Log in to Favourite!</button>}
-                {loggedInUser && isUserMade && <button className="edit" onClick={toggleEdit} disabled={status !=="idle"}>Edit Recipe</button>}
+                        {isFavourite && <button className="remove" onClick={unfavourite} disabled={status !== "idle"}>Remove from Favourites</button>}
+                        {loggedInUser && !isFavourite && !isUserMade && <button className="add" onClick={favourite} disabled={status !== "idle"}>Add to Favourites!</button>}
+                        {!loggedInUser && <button disabled className="add">Log in to Favourite!</button>}
+                        {loggedInUser && isUserMade && <button className="edit" onClick={toggleEdit} disabled={status !== "idle"}>Edit Recipe</button>}
 
-                <h3>Description: </h3>
-                <p>{recipe.description}</p>
+                    </div>
+                    <img src={recipe.src} alt={recipe.name} />
+                </div>
 
-                <p>Amount made: {recipe.amountMade}</p>
+                <div className="recipe-content">
+                    <h3>Description: </h3>
+                    <p>{recipe.description}</p>
 
-                <h3>Ingredients:</h3>
-                <ul>
-                    {recipe.ingredients.map((ingr) => {
-                        return <li key={ingr}>{ingr}</li>
-                    })}
-                </ul>
+                    <p>Amount made: {recipe.amountMade}</p>
 
-                <h3>Instructions: </h3>
-                <ul>
-                    {recipe.instructions.map((instr) => {
-                        return <li key={instr}>{instr}</li>
-                    })}
-                </ul>
+                    <h3>Ingredients:</h3>
+                    <ul>
+                        {recipe.ingredients.map((ingr) => {
+                            return <li key={ingr}>{ingr}</li>
+                        })}
+                    </ul>
 
-                <h3>Tags: </h3>
-                <ul>
-                    {recipe.tags.map((tag) => {
-                        return <li key={tag}>{tag}</li>
-                    })}
-                </ul>
+                    <h3>Instructions: </h3>
+                    <ol>
+                        {recipe.instructions.map((instr) => {
+                            return <li key={instr}>{instr}</li>
+                        })}
+                    </ol>
+
+                    <h3>Tags: </h3>
+                    <ul>
+                        {recipe.tags.map((tag) => {
+                            return <li key={tag}>{tag}</li>
+                        })}
+                    </ul>
+                </div>
             </>
         )
     };
@@ -119,5 +127,31 @@ const Recipe = () => {
 export default Recipe;
 
 const Container = styled.div`
+    .intro {
+        display: flex;
+        max-width: 900px;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 20px;
+    }
+    .recipe-content {
+        border-top: 2px solid var(--green);
+    }
+
+    img {
+        max-width: 250px;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+    }
+
+    ul {
+        list-style-type: circle;
+    }
     
+    @media (max-width: 600px) {
+        .intro {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
 `;

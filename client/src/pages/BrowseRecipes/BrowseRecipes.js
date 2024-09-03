@@ -34,7 +34,7 @@ const BrowseRecipes = () => {
     return (
         <Container className="main">
 
-            <form>
+            <FilterForm>
                 <label htmlFor="filter">Looking through recipes of type:  </label>
                 <select name="filter" id="filter" onChange={handleChange}>
                     <option value="Any">Any</option>
@@ -46,9 +46,9 @@ const BrowseRecipes = () => {
                     <option value="Dessert">Dessert</option>
                     <option value="Misc">Misc</option>
                 </select>
-            </form>
+            </FilterForm>
 
-            {filteredRecipes && loggedInUser && filteredRecipes.map((recipe) => {
+            {filteredRecipes && filteredRecipes.map((recipe) => {
                 return RecipeCard(recipe); 
             })}
 
@@ -58,12 +58,21 @@ const BrowseRecipes = () => {
 }
 
 const Container = styled.div`
-    width: 90%;
     text-align: center;
 `;
 
 const FilterForm = styled.form`
+    select {
+        background-color: var(--button-green);
+        border: 2px solid var(--green);
+        border-radius: 5px;
+        box-shadow: var(--shadow);
 
+        font-family: inherit;
+        font-size: 1rem;
+        padding: 5px;
+        margin-left: 15px;
+    }
 `;
 
 export default BrowseRecipes;

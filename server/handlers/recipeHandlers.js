@@ -1,7 +1,12 @@
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
 const uuid = require("uuid");
-const { MONGO_URI } = process.env;
+const { MONGO_URI, CLOUDINARY_URL } = process.env;
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+    secure: true
+});
 
 // Names of the Database and Collections (lower risk of typos)
 const DB = "TasteBuddies";
@@ -67,12 +72,38 @@ const getRecipe = async (req, res) => {
 const newRecipe = async (req, res) => {
     const client = new MongoClient(MONGO_URI);
 
-    const { name, authorName, type, description, amountMade, ingredients, instructions, tags } = req.body;
+    let { name, authorName, type, description, amountMade, ingredients, instructions, src, tags } = req.body;
 
     // Validation that all required fields were filled
     if (!name || !authorName || !type || !description || !amountMade || !ingredients || !instructions || !tags) {
         res.status(400).json({ status: 400, message: "Not all required information was provided" });
         return
+    }
+
+    // Applying the default image if no image link was given by the user
+    if (!src) {
+        switch (type) {
+            case "Main Dish":
+                src = "https://res.cloudinary.com/dfszibmt6/image/upload/v1725042179/main-dish.png";
+                break;
+            case "Apetizer":
+                src = "https://res.cloudinary.com/dfszibmt6/image/upload/v1725042176/appetizer.png";
+                break;
+            case "Soup":
+                src = "https://res.cloudinary.com/dfszibmt6/image/upload/v1725042181/soup.png";
+                break;
+            case "Sauce":
+                src = "https://res.cloudinary.com/dfszibmt6/image/upload/v1725042180/sauce.png";
+                break;
+            case "Finger Food":
+                src = "https://res.cloudinary.com/dfszibmt6/image/upload/v1725042178/finger-food.png";
+                break;
+            case "Dessert":
+                src = "https://res.cloudinary.com/dfszibmt6/image/upload/v1725042177/dessert.png";
+                break;
+            default:
+                src = "https://res.cloudinary.com/dfszibmt6/image/upload/v1725042180/misc.png"
+        }
     }
 
     // Validation of ingredients list (shouldn't have blank spaces)
@@ -109,6 +140,7 @@ const newRecipe = async (req, res) => {
         ingredients: filteredIngredients,
         instructions: filteredInstructions,
         tags,
+        src,
         ratings: []
     }
 
@@ -149,16 +181,42 @@ const newRecipe = async (req, res) => {
 // PATCH Endpoints
 
 const editRecipe = async (req, res) => {
-    const { _id, name, type, description, amountMade, ingredients, instructions, tags } = req.body;
+    let { _id, name, type, description, amountMade, ingredients, instructions, src, tags } = req.body;
     if (!_id || !name || !type || !description || !amountMade || !ingredients || !instructions || !tags) {
         res.status(400).json({ status: 400, message: "Information missing" });
         return;
     }
 
+    // If no uploaded image link is provided
+    if (!src) {
+        switch (type) {
+            case "Main Dish":
+                src = "https://res.cloudinary.com/dfszibmt6/image/upload/v1725042179/main-dish.png";
+                break;
+            case "Apetizer":
+                src = "https://res.cloudinary.com/dfszibmt6/image/upload/v1725042176/appetizer.png";
+                break;
+            case "Soup":
+                src = "https://res.cloudinary.com/dfszibmt6/image/upload/v1725042181/soup.png";
+                break;
+            case "Sauce":
+                src = "https://res.cloudinary.com/dfszibmt6/image/upload/v1725042180/sauce.png";
+                break;
+            case "Finger Food":
+                src = "https://res.cloudinary.com/dfszibmt6/image/upload/v1725042178/finger-food.png";
+                break;
+            case "Dessert":
+                src = "https://res.cloudinary.com/dfszibmt6/image/upload/v1725042177/dessert.png";
+                break;
+            default:
+                src = "https://res.cloudinary.com/dfszibmt6/image/upload/v1725042180/misc.png"
+        }
+    }
+
     // Removing empty spaces from arrays
     const filteredIngredients = [];
     ingredients.forEach((ingr) => {
-        if (ingr.length > 0) 
+        if (ingr.length > 0)
             filteredIngredients.push(ingr);
     });
 
@@ -170,7 +228,7 @@ const editRecipe = async (req, res) => {
 
     const filteredTags = [];
     tags.forEach((tag) => {
-        if (tag.length > 0) 
+        if (tag.length > 0)
             filteredTags.push(tag);
     });
 
@@ -198,6 +256,7 @@ const editRecipe = async (req, res) => {
             ingredients: filteredIngredients,
             instructions: filteredInstructions,
             tags: filteredTags,
+            src,
             ratings: originalRecipe.ratings
         }
 
@@ -214,7 +273,7 @@ const editRecipe = async (req, res) => {
     } finally {
         client.close();
     }
-    
+
 };
 
 // Exporting functions:

@@ -37,5 +37,4 @@ const Favourites = () => {
 export default Favourites;
 
 const Container = styled.div`
-
 `;

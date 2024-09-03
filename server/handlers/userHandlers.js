@@ -199,7 +199,7 @@ const removeFavourite = async (req, res) => {
 
         // Checking that the recipe is in favourites currently
         const index = user.favourites.findIndex((id) => {
-            return id = favId;
+            return id === favId;
         });
         if (index === -1) {
             res.status(404).json({ status: 404, message: "Recipe was not found in favourites" });
@@ -220,7 +220,6 @@ const removeFavourite = async (req, res) => {
             recipes: user.recipes,
             favourites: user.favourites
         }
-
         res.status(200).json({ status: 200, message: "Favourite removed successfully", data: newUser });
     } catch (err) {
         console.log(err);

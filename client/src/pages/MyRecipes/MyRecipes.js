@@ -21,9 +21,9 @@ const MyRecipes = () => {
         <Container className="main">
             {!loggedInUser || !recipes && <p>Recipes Loading...</p>}
 
-            {loggedInUser && loggedInUser.recipes.length === 0 && <p>You have no recipes!</p>}
+            {loggedInUser && recipes && <NewRecipeNav to="/create-recipe">Create a new recipe!</NewRecipeNav>}
 
-            {loggedInUser && recipes && <NavThing to="/create-recipe">Create a new recipe!</NavThing>}
+            {loggedInUser && loggedInUser.recipes.length === 0 && <p>You have no recipes!</p>}
 
             {loggedInUser && recipes && loggedInUser.recipes.map((recipeId) => {
 
@@ -41,11 +41,14 @@ const MyRecipes = () => {
 export default MyRecipes;
 
 const Container = styled.div`
-    width: 90%;
     text-align: center;
 `;
 
 
-const NavThing = styled(NavLink)`
+const NewRecipeNav = styled(NavLink)`
     margin: auto;
+    border: 2px solid var(--green);
+    padding: 5px 20px;
+    color: black;
+    background-color: var(--button-green);
 `
