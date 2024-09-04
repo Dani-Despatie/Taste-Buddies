@@ -63,6 +63,7 @@ const BrowseRecipes = () => {
 
     return (
         <Container className="main">
+            <h2>Browse</h2>
 
             <FilterForm onSubmit={handleSearchSubmit}>
                 <label htmlFor="search">Search By Name: </label>
@@ -81,10 +82,11 @@ const BrowseRecipes = () => {
                 </select>
             </FilterForm>
 
+            {!filteredRecipes && <p>Loading recipes...</p>}
+
             {filteredRecipes && filteredRecipes.map((recipe) => {
                 return RecipeCard(recipe);
             })}
-
             {filteredRecipes && filteredRecipes.length === 0 && <p>No {filter} recipes found</p>}
         </Container>
     )

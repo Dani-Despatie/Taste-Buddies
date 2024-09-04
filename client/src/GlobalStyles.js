@@ -29,7 +29,7 @@ const GlobalStyles = createGlobalStyle`
         position: relative;
         top: calc(var(--header-height) + 5px);
         padding: 10px 30px;
-        width: calc(75% - 20px);
+        width: calc(75% - 40px);
         margin-left: calc(10% - 50px);
         padding-bottom: 40px;
 
@@ -76,7 +76,12 @@ const GlobalStyles = createGlobalStyle`
         text-decoration: none;
     }
 
-    
+    input:hover {
+        outline: 1px solid var(--green);
+    }    
+    input:focus {
+        outline: 2px solid var(--green);
+    }
     
 
 `

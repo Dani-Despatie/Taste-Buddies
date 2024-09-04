@@ -48,7 +48,7 @@ const SignUp = () => {
 
     return (
         <Container className="main">
-
+            <h2>Sign Up!</h2>
 
             <form onSubmit={handleSubmit}>
                 <label htmlFor="name">Name: </label>
@@ -72,5 +72,38 @@ const SignUp = () => {
 export default SignUp;
 
 const Container = styled.div`
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+        
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
 
+        border: 2px solid var(--green);
+        width: 80%;
+        max-width: 800px;
+    }
+
+    input {
+        font-family: inherit;
+        font-size: 1rem;
+        width: 40%;
+        text-align: center;
+        padding: 3px;
+    }
+    button {
+        width: fit-content;
+        background-color: var(--button-green);
+        border: 2px solid var(--green);
+        border-radius: 5px;
+        padding: 3px 15px;
+        margin: 20px;
+        font-family: inherit;
+        font-size: 1rem;
+    }
+    button:hover {
+        scale: 1.03;
+    }
 `;

@@ -19,7 +19,9 @@ const MyRecipes = () => {
 
     return (
         <Container className="main">
-            {!loggedInUser || !recipes && <p>Recipes Loading...</p>}
+            <h2>My Recipes</h2>
+
+            {!loggedInUser && <p>Recipes Loading...</p>}
 
             {loggedInUser && recipes && <NewRecipeNav to="/create-recipe">Create a new recipe!</NewRecipeNav>}
 

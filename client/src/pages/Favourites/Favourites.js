@@ -18,6 +18,8 @@ const Favourites = () => {
 
     return (
         <Container className="main">
+            <h2>Favourites</h2>
+
             {!recipes && <p>Recipes Loading...</p>}
             
             {loggedInUser && loggedInUser.favourites.length === 0 && <p>You have no favourites!</p>}
@@ -37,4 +39,5 @@ const Favourites = () => {
 export default Favourites;
 
 const Container = styled.div`
+    text-align: center;
 `;

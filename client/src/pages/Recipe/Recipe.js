@@ -88,7 +88,7 @@ const Recipe = () => {
                     <h3>Description: </h3>
                     <p>{recipe.description}</p>
 
-                    <p>Amount made: {recipe.amountMade}</p>
+                    <p><b>Amount made:</b> {recipe.amountMade}</p>
 
                     <h3>Ingredients:</h3>
                     <ul>

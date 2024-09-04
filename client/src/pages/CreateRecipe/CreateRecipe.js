@@ -196,12 +196,6 @@ const Container = styled.div`
         font-size: 1rem;
         width: 75%;
     }
-    input:hover {
-        outline: 1px solid var(--green);
-    }
-    input:focus {
-        outline: 2px solid var(--green);
-    }
 
     select {
         max-width: 30%;
