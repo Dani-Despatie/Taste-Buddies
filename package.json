@@ -4,7 +4,7 @@
   },
 
   "scripts": {
-    "start": "concurrently \"cd server && yarn start\" \"cd client && yarn start\"",
+    "start": "concurrently \"yarn install && cd server && yarn start\" \"cd client && yarn start\"",
     "install": "concurrently \"cd server && yarn install\" \"cd client && yarn install\""
   }
 }
