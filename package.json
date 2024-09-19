@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "concurrently": "^9.0.1"
+  },
+
+  "scripts": {
+    "start": "concurrently \"cd server && yarn start\" \"cd client && yarn start\""
+  }
+}
