@@ -13,22 +13,22 @@ app.use(express.json());
 app.use(morgan("tiny"));
 
 // GETS
-app.get("https://taste-buddies.onrender.com/recipes", getRecipes);
-app.get("https://taste-buddies.onrender.com/recipe/:id", getRecipe);
-app.get("https://taste-buddies.onrender.com//users", getUsers);
-app.get("https://taste-buddies.onrender.com//user/:id", getUser);
+app.get("/recipes", getRecipes);
+app.get("/recipe/:id", getRecipe);
+app.get("/users", getUsers);
+app.get("/user/:id", getUser);
 
 // POSTS
-app.post("https://taste-buddies.onrender.com/recipe", newRecipe);
-app.post("https://taste-buddies.onrender.com/newUser", newUser);
+app.post("/recipe", newRecipe);
+app.post("/newUser", newUser);
 
 // PATCHES
-app.patch("https://taste-buddies.onrender.com/editRecipe", editRecipe);
-app.patch("https://taste-buddies.onrender.com/login", login);
-app.patch("https://taste-buddies.onrender.com/autoLogin", autoLogin)
-app.patch("https://taste-buddies.onrender.com/annotateRecipe", annotateRecipe);
-app.patch("https://taste-buddies.onrender.com/addFavourite", addFavourite);
-app.patch("https://taste-buddies.onrender.com/removeFavourite", removeFavourite);
+app.patch("/editRecipe", editRecipe);
+app.patch("/login", login);
+app.patch("/autoLogin", autoLogin)
+app.patch("/annotateRecipe", annotateRecipe);
+app.patch("/addFavourite", addFavourite);
+app.patch("/removeFavourite", removeFavourite);
 
 // DELETES
 
