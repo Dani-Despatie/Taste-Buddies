@@ -18,6 +18,8 @@ import SignUp from "./pages/SignUp/SignUp";
 
 const App = () => {
 
+    console.log("app running...");
+
     return (
         <Router>
             <GlobalStyles />
