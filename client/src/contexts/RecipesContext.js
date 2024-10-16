@@ -5,8 +5,6 @@ export const RecipesContext = createContext();
 const RecipesProvider = ({ children }) => {
     const [recipes, setRecipes] = useState(null);
 
-    console.log("Recipes Context Activated.");
-
     const getRecipes = async () => {
         console.log("Trying get recipes...");
         try {
@@ -16,7 +14,6 @@ const RecipesProvider = ({ children }) => {
             console.log("get recipes succeeded");
         } catch (err) {
             console.log("get recipes failed");
-            console.log(err);
         }
     }
 

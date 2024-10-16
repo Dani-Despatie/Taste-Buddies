@@ -16,9 +16,9 @@ import CreateRecipe from "./pages/CreateRecipe/CreateRecipe";
 import SignIn from "./pages/SignIn/SignIn";
 import SignUp from "./pages/SignUp/SignUp";
 
-const App = () => {
+console.log("App.js running...");
 
-    console.log("app running...");
+const App = () => {
 
     return (
         <Router>
