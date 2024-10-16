@@ -9,11 +9,12 @@ const RecipesProvider = ({ children }) => {
         console.log("Trying get recipes...");
         try {
             const res = await fetch("/recipes");
+            console.log(res);
             const { data } = await res.json();
+            console.log(data);
             setRecipes(data);
-            console.log("get recipes succeeded");
         } catch (err) {
-            console.log("get recipes failed");
+            console.error(err);
         }
     }
 
