@@ -18,6 +18,18 @@ const RecipesProvider = ({ children }) => {
         }
     }
 
+    // DEBUGGING
+    const getFirst = async () => {
+        try {
+            const res = await fetch("https://taste-buddies.onrender.com/recipes");
+            console.log(res);
+            const { data } = await res.json();
+            console.log(data);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     useEffect(() => {
         getRecipes();
     }, [])
@@ -25,6 +37,9 @@ const RecipesProvider = ({ children }) => {
     const refreshRecipes = () => {
         getRecipes();
     }
+
+    // DEBUGGING AGAIN
+    getFirst();
 
     return (
         <RecipesContext.Provider value={{ recipes, refreshRecipes }} >

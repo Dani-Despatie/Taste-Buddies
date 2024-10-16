@@ -3,6 +3,7 @@ const morgan = require("morgan");
 
 const PORT = 8000;
 const app = express();
+const { MONGO_URI, CLOUDINARY_URL } = process.env;
 
 // require handler functions here
 const { getUsers, getUser, newUser, annotateRecipe, addFavourite, removeFavourite, login, autoLogin } = require("./handlers/userHandlers");
@@ -33,6 +34,24 @@ app.patch("/removeFavourite", removeFavourite);
 
 // DELETES
 
+// DEBUGGING EXTRAS
+app.get("https://taste-buddies.onrender.com/recipes", async (req, res) => {
+    const client = new MongoClient(MONGO_URI);
+    try {
+        await client.connect();
+        const db = client.db("TasteBuddies");
+        const allRecipes = await db.collection("recipes").find().toArray();
+        if (allRecipes.length > 0) {
+            console.log(allRecipes[0]);
+        }
+        else {
+            console.log("Recipes array of length 0");
+        }
+    }
+    catch (err) {
+        console.error(err);
+    }
+})
 
 // Catch-All for anything else
 app.use("*", (req, res) => {
