@@ -34,25 +34,6 @@ app.patch("/removeFavourite", removeFavourite);
 
 // DELETES
 
-// DEBUGGING EXTRAS
-app.get("https://taste-buddies.onrender.com/recipes", async (req, res) => {
-    const client = new MongoClient(MONGO_URI);
-    try {
-        await client.connect();
-        const db = client.db("TasteBuddies");
-        const allRecipes = await db.collection("recipes").find().toArray();
-        if (allRecipes.length > 0) {
-            console.log(allRecipes[0]);
-        }
-        else {
-            console.log("Recipes array of length 0");
-        }
-    }
-    catch (err) {
-        console.error(err);
-    }
-})
-
 // Catch-All for anything else
 app.use("*", (req, res) => {
     res.status(404).json({ status: 404, message: "Endpoint not found" });
