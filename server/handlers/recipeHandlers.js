@@ -17,6 +17,7 @@ const users = "users";
 // GET Endpoints
 
 const getRecipes = async (req, res) => {
+    console.log("getRecipes endpoint found! Connecting...");
     const client = new MongoClient(MONGO_URI);
 
     try {

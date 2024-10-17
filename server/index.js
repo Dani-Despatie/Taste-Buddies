@@ -2,7 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require('cors');
 
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 const app = express();
 app.use(cors());
 const { MONGO_URI, CLOUDINARY_URL } = process.env;
