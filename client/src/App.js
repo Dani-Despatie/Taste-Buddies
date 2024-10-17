@@ -16,8 +16,6 @@ import CreateRecipe from "./pages/CreateRecipe/CreateRecipe";
 import SignIn from "./pages/SignIn/SignIn";
 import SignUp from "./pages/SignUp/SignUp";
 
-console.log("App.js running...");
-
 const App = () => {
 
     return (
