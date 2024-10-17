@@ -1,4 +1,7 @@
 import { createContext, useState, useEffect } from "react";
+const rootUrl = "https://taste-buddies.onrender.com"
+import axios from 'axios';
+
 
 export const RecipesContext = createContext();
 
@@ -7,14 +10,14 @@ const RecipesProvider = ({ children }) => {
 
     const getRecipes = async () => {
         try {
-            const res = await fetch("/recipes");
-            const { data } = await res.json();
+            const res = await axios.get(`${rootUrl}/recipes`);
+            console.log(res);
+            const data = res.data.data;
             setRecipes(data);
         } catch (err) {
             console.error(err);
         }
     }
-
 
     useEffect(() => {
         getRecipes();
