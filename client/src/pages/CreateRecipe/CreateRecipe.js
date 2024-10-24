@@ -3,6 +3,8 @@ import { LoggedInUserContext } from "../../contexts/LoggedInUserContext";
 import { RecipesContext } from "../../contexts/RecipesContext";
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+const rootUrl = "https://taste-buddies.onrender.com";
 
 const CreateRecipe = () => {
     const { loggedInUser, refreshUser } = useContext(LoggedInUserContext);
@@ -49,16 +51,9 @@ const CreateRecipe = () => {
         }
 
         // Sending to backend
-        const myHeaders = new Headers();
-        myHeaders.append("Content-type", "application/json");
         try {
-            const res = await fetch("/recipe", {
-                method: "POST",
-                body: JSON.stringify(recipe),
-                headers: myHeaders
-            })
-            const result = await res.json();
-
+            const res = await axios.post(`${rootUrl}/recipe`, recipe);
+            console.log(res);
             if (res.status === 201) {
                 setStatus("idle");
                 refreshUser();
@@ -66,9 +61,10 @@ const CreateRecipe = () => {
                 navigate("/my-recipes");
             }
             else {
-                setStatus(result.message);
+                setStatus(res.message);
             }
         } catch (err) {
+            setStatus(err.message);
             console.log(err);
         }
     };

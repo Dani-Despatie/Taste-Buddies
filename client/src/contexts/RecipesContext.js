@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-const rootUrl = "https://taste-buddies.onrender.com"
+const rootUrl = "https://taste-buddies.onrender.com";
 import axios from 'axios';
 
 
@@ -11,11 +11,11 @@ const RecipesProvider = ({ children }) => {
     const getRecipes = async () => {
         try {
             const res = await axios.get(`${rootUrl}/recipes`);
-            console.log(res);
             const data = res.data.data;
             setRecipes(data);
         } catch (err) {
-            console.error(err);
+            console.log(err.message);
+            setRecipes(err.status);
         }
     }
 

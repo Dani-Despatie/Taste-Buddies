@@ -4,6 +4,8 @@ import { LoggedInUserContext } from "../../contexts/LoggedInUserContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { RecipesContext } from "../../contexts/RecipesContext";
 import { Navigate } from "react-router-dom";
+const rootUrl = "https://taste-buddies.onrender.com";
+import axios from 'axios';
 
 const EditRecipe = () => {
     const { id } = useParams();
@@ -91,15 +93,8 @@ const EditRecipe = () => {
         }
 
         // sending to back end
-        const myHeaders = new Headers();
-        myHeaders.append("Content-type", "application/json");
         try {
-            const res = await fetch("/editRecipe", {
-                method: "PATCH",
-                body: JSON.stringify(newRecipe),
-                headers: myHeaders
-            })
-            const result = await res.json();
+            const res = await axios.patch(`${rootUrl}/editRecipe`, newRecipe);
 
             if (res.status === 200) {
                 setStatus("idle");
@@ -110,7 +105,15 @@ const EditRecipe = () => {
                 setStatus(result.message);
             }
         } catch (err) {
-            console.log(err);
+            if (err.status === 400) {
+                setStatus("No change was made to the recipe");
+            }
+            else if (err.status === 404) {
+                setStatus("Error: Recipe could not be found");
+            }
+            else {
+                setStatus(err.message);
+            }
         }
     }
 

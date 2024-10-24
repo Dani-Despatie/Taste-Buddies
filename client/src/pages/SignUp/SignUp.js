@@ -3,6 +3,8 @@ import {useContext} from "react";
 import { LoggedInUserContext } from "../../contexts/LoggedInUserContext";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+const rootUrl = "https://taste-buddies.onrender.com";
 
 
 const SignUp = () => {
@@ -15,34 +17,28 @@ const SignUp = () => {
         event.preventDefault();
         setStatus("pending");
 
-        const myHeaders = new Headers();
-        myHeaders.append("Content-type", "application/json");
-
         const email = event.target.email.value;
         const userName = event.target.name.value;
         const password = event.target.password.value;
 
-        console.log("Info received");
-
         try {
-            const res = await fetch("/newUser", {
-                method: "POST",
-                body: JSON.stringify({ userName, email, password }),
-                headers: myHeaders
-            });
-            const result = await res.json();
-            console.log("Status = ", res.status);
+            const res = await axios.post(`${rootUrl}/newUser`, {userName, email, password});
 
             if (res.status === 201) {
                 setStatus("idle");
-                await login(event.target.email.value, event.target.password.value);
+                await login(email, password);
                 navigate("/");
             }
             else {
-                setStatus(result.message);
+                setStatus(res.status);
             }
         } catch (err) {
-            console.log(err);
+            if (err.status === 404) {
+                setStatus("Error: database of users not found.");
+            }
+            else if (err.status === 400) {
+                setStatus(`User with email ${email} already exists`);
+            }
         }
     }
 

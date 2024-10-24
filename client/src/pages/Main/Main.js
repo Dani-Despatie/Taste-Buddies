@@ -40,6 +40,8 @@ const Main = () => {
             <p>Don't know where to start?</p>
             <h2>Recommended Recipes:</h2>
             <div className="recommendeds">
+                {!recipes && <p>Loading recipes...</p>}
+                {typeof(recipes) === Number && <p>An error has occurred: {recipes}</p>}
                 {recRecipes && RecipeCard(recRecipes[0])}
                 {recRecipes && RecipeCard(recRecipes[1])}
             </div>

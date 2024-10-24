@@ -1,5 +1,7 @@
 import { createContext } from "react";
 import { useState, useEffect } from "react";
+import axios from 'axios';
+const rootUrl = "https://taste-buddies.onrender.com";
 
 export const LoggedInUserContext = createContext();
 
@@ -9,24 +11,22 @@ const LoggedInUserProvider = ({ children }) => {
 
     // Login function
     const login = async (email, password) => {
-        const myHeaders = new Headers();
-        myHeaders.append("Content-type", "application/json");
 
         try {
-            const res = await fetch("/login", {
-                method: "PATCH",
-                body: JSON.stringify({ email, password }),
-                headers: myHeaders
-            });
+            const res = await axios.patch(`${rootUrl}/login`, { email, password });
 
             if (res.status === 200) {
-                const user = await res.json();
-                setLoggedInUser(user.data);
+                const user = res.data.data;
+                setLoggedInUser(user);
                 setToken({ email, date: Date.now() });
             }
             return res.status;
         } catch (err) {
-            console.log(err);
+            if (err.status === 401 || err.status === 404) {
+                console.log(err.message);
+                return err.status;
+            }
+            else console.log(err.message);
         }
     }
     // Logout function
@@ -37,29 +37,25 @@ const LoggedInUserProvider = ({ children }) => {
 
     // Auto login function
     const autoLogin = async () => {
-        const myHeaders = new Headers();
-        myHeaders.append("Content-type", "application/json");
         const token = getToken();
         if (token && token.email) {
             try {
-                const res = await fetch("/autoLogin", {
-                    method: "PATCH",
-                    body: JSON.stringify({ token }),
-                    headers: myHeaders
-                });
-
+                const res = await axios.patch(`${rootUrl}/autoLogin`, { token });
                 if (res.status === 200) {
-                    const user = await res.json();
-                    setLoggedInUser(user.data);
+                    const user = res.data.data;
+                    setLoggedInUser(user);
                 }
                 if (res.status === 401) {
                     setToken(null);
-                    const result = await res.json();
-                    console.log(result.message);
+                    console.log(res.message);
                 }
                 return res.status;
             } catch (err) {
-                console.log(err);
+                if (err.status === 401) {
+                    setToken(null);
+                    console.log("Login token expired");
+                }
+                else console.log(err.message);
             }
         }
     }
@@ -87,11 +83,14 @@ const LoggedInUserProvider = ({ children }) => {
 
         const id = loggedInUser._id;
         try {
-            const res = await fetch(`/user/${id}`);
-            const { data } = await res.json();
+            const res = await axios.get(`${rootUrl}/user/${id}`);
+            const { data } = res.data;
             setLoggedInUser(data);
         } catch (err) {
-            console.log(err);
+            if (err.status === 404) {
+                console.log("User not found");
+            }
+            else console.log(err.message);
         }
     }
 
@@ -100,18 +99,17 @@ const LoggedInUserProvider = ({ children }) => {
         if (!loggedInUser) {
             return null;
         }
-        const myHeaders = new Headers();
-        myHeaders.append("Content-type", "application/json");
+
         try {
-            const res = await fetch("/addFavourite", {
-                method: "PATCH",
-                body: JSON.stringify({ _id: loggedInUser._id, favId: recipeId }),
-                headers: myHeaders
-            });
-            const result = await res.json();
-            setLoggedInUser(result.data);
+            const res = await axios.patch("/addFavourite",{ _id: loggedInUser._id, favId: recipeId });
+            const result = res.data.data;
+            setLoggedInUser(result);
         } catch (err) {
-            console.log(err);
+            if (err.status === 400) 
+                console.log("Bad request/information missing");
+            else if (err.status === 404) 
+                console.log("User or recipe was not found");
+            else console.log(err.message);
         }
     }
 
@@ -119,18 +117,16 @@ const LoggedInUserProvider = ({ children }) => {
         if (!loggedInUser) {
             return null;
         }
-        const myHeaders = new Headers();
-        myHeaders.append("Content-type", "application/json");
         try {
-            const res = await fetch("/removeFavourite", {
-                method: "PATCH",
-                body: JSON.stringify({ _id: loggedInUser._id, favId: recipeId }),
-                headers: myHeaders
-            })
-            const result = await res.json();
-            setLoggedInUser(result.data);
+            const res = await axios.patch("/removeFavourite", { _id: loggedInUser._id, favId: recipeId })
+            const result = res.data.data;
+            setLoggedInUser(result);
         } catch (err) {
-            console.log(err);
+            if (err.status === 404) 
+                console.log("User or recipe was not found");
+            else if (err.status === 500) 
+                console.log("Error 500: Something went wrong removing the recipe");
+            else console.log(err.message);
         }
     };
 
