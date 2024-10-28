@@ -67,6 +67,7 @@ const Container = styled.div`
 
     .recommendeds {
         display: inline-block;
+        width: 100%;
     }
     
     @media (max-width: 1030px) {
