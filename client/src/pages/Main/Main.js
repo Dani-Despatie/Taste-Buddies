@@ -11,7 +11,7 @@ const Main = () => {
     const [recRecipes, setRecRecipes] = useState(null);
 
     useEffect(() => {
-        if (recipes) {
+        if (recipes && recipes.length > 1) {
             const length = recipes.length;
 
             // This will select random indexes as recommended recipes
@@ -41,7 +41,7 @@ const Main = () => {
             <h2>Recommended Recipes:</h2>
             <div className="recommendeds">
                 {!recipes && <p>Loading recipes...</p>}
-                {typeof(recipes) === Number && <p>An error has occurred: {recipes}</p>}
+                {typeof(recipes) === Number && <p>An error has occurred</p>}
                 {recRecipes && RecipeCard(recRecipes[0])}
                 {recRecipes && RecipeCard(recRecipes[1])}
             </div>

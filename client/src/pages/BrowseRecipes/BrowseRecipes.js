@@ -29,7 +29,7 @@ const BrowseRecipes = () => {
     // ------------------------------------------------------------
     // Filtering based on filters AND searched string
     useEffect(() => {
-        if (!recipes) {
+        if (!recipes ||  !Array.isArray(recipes)) {
             return;
         }
         // Filtering based on recipe type
@@ -84,7 +84,7 @@ const BrowseRecipes = () => {
 
             {!filteredRecipes && <p>Loading recipes...</p>}
 
-            {filteredRecipes && filteredRecipes.map((recipe) => {
+            {filteredRecipes && filteredRecipes.length > 0 && filteredRecipes.map((recipe) => {
                 return RecipeCard(recipe);
             })}
             {filteredRecipes && filteredRecipes.length === 0 && <p>No {filter} recipes found</p>}

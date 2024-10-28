@@ -82,7 +82,7 @@ const newUser = async (req, res) => {
         // Validating if email is already associated with a user
         const allUsers = await db.collection(users).find().toArray();
 
-        if (!allUsers || allUsers.length === 0) {
+        if (allUsers === null) {
             res.status(404).json({ status: 404, message: "User list not found" });
             return;
         }
