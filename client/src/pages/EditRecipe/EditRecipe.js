@@ -3,7 +3,6 @@ import { useEffect, useContext, useState } from "react";
 import { LoggedInUserContext } from "../../contexts/LoggedInUserContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { RecipesContext } from "../../contexts/RecipesContext";
-import { Navigate } from "react-router-dom";
 const rootUrl = "https://taste-buddies.onrender.com";
 import axios from 'axios';
 
@@ -13,7 +12,8 @@ const EditRecipe = () => {
     const { recipes, refreshRecipes } = useContext(RecipesContext);
     const [recipe, setRecipe] = useState(null);
     const [status, setStatus] = useState("start");
-    const [instructions, setInstructions] = useState(null);
+    const [headers, setHeaders] = useState(null);
+    const [steps, setSteps] = useState(null);
     const [ingredients, setIngredients] = useState(null);
     const [tags, setTags] = useState(null);
     const navigate = useNavigate();
@@ -31,7 +31,14 @@ const EditRecipe = () => {
     }, [recipes])
     useEffect(() => {
         if (recipe && status === "start") {
-            setInstructions(recipe.instructions);
+            const newHeaders = [];
+            const newSteps = [];
+            recipe.instructions.forEach((instr) => {
+                newHeaders.push(instr.header);
+                newSteps.push(instr.steps);
+            });
+            setHeaders(newHeaders);
+            setSteps(newSteps);
             setIngredients(recipe.ingredients);
             setTags(recipe.tags);
             setStatus("idle");
@@ -44,10 +51,26 @@ const EditRecipe = () => {
         event.preventDefault();
         setIngredients([...ingredients, ""]);
     };
-    const addInstr = (event) => {
+    const addHeader = (event) => {
         event.preventDefault();
-        setInstructions([...instructions, ""]);
+        if (headers === null) {
+            setHeaders(["",""]);
+        }
+        else if (headers.length < 9) {
+            setHeaders([...headers, ""]);
+            setSteps([...steps, [""]]);
+        }
+        else {
+            console.log("Too many sections");
+        }
     };
+    const addStep = (event) => {
+        event.preventDefault;
+        const index = event.target.id.substr(10);
+        const newSteps = [...steps];
+        newSteps[index].push("");
+        setSteps(newSteps);
+    }
     const addTag = (event) => {
         event.preventDefault();
         setTags([...tags, ""]);
@@ -59,12 +82,21 @@ const EditRecipe = () => {
         newIngredients[index] = event.target.value;
         setIngredients(newIngredients);
     }
-    const handleInstrChange = (event) => {
-        const index = event.target.id.substr(5);
-        const newInstructions = [...instructions];
-        newInstructions[index] = event.target.value;
-        setInstructions(newInstructions);
+    const handleHeaderChange = (event) => {
+        const index = event.target.id.substr(6);
+
+        const newHeaders = [...headers];
+        newHeaders[index] = event.target.value;
+        setHeaders(newHeaders);
     };
+    const handleStepChange = (event) => {
+        const stepIndex = event.target.id.substr(5);
+        const headerIndex = event.target.id[4];
+
+        const newSteps = [...steps];
+        newSteps[headerIndex][stepIndex] = event.target.value;
+        setSteps(newSteps);
+    }
     const handleTagChange = (event) => {
         const index = event.target.id.substr(3);
         const newTag = [...tags];
@@ -79,6 +111,11 @@ const EditRecipe = () => {
         if (!loggedInUser) {
             setStatus("Not logged in");
             return;
+        }
+
+        const instructions = [];
+        for (let n=0; n<headers.length; n++) {
+            instructions.push({header: headers[n], steps: steps[n]});
         }
 
         const newRecipe = {
@@ -146,25 +183,35 @@ const EditRecipe = () => {
                 <ul>
                     {ingredients.map((ingr, index) => {
                         const id = `ingr${index}`;
-                        return <li><input key={id} id={id} defaultValue={ingr} onChange={handleIngrChange} /> </li>
+                        return <li key={id}><input key={id} id={id} defaultValue={ingr} onChange={handleIngrChange} /> </li>
                     })}
                 </ul>
                 <button onClick={addIngr}>+ Input</button>
 
-                <label htmlFor="instr0">Instructions: </label>
-                <ol>
-                    {instructions.map((instr, index) => {
-                        const id = `instr${index}`;
-                        return <li><input key={id} id={id} defaultValue={instr} onChange={handleInstrChange} /></li>
+                <label htmlFor="header0">Instructions: </label>
+                <div>
+                    {headers.map((header, index) => {
+                        const id = `header${index}`;
+                        return <ol key={id}>
+                            <input key={id} className="header" id={id} hidden={headers.length === 1} defaultValue = {header} placeholder="Section Name (optional)" onChange={handleHeaderChange}/>
+                            {steps[index].map((step, stepIndex) => {
+                                const stepId = `step${index}${stepIndex}`;
+                                return <li className="steps" key={stepId}>
+                                    <input key={stepId} id={stepId} defaultValue={step} onChange={handleStepChange}/>
+                                </li>
+                            })}
+                            <button type="button" onClick={addStep} id={`stepButton${index}`} key={index}>+ Step</button>
+                            <br/>
+                        </ol>
                     })}
-                </ol>
-                <button onClick={addInstr}>+ Input</button>
+                </div>
+                <button onClick={addHeader}>+ Input</button>
 
                 <label htmlFor="tags">Tags: </label>
                 <ul>
                     {tags.map((tag, index) => {
                         const id = `tag${index}`;
-                        return <li><input key={id} id={id} defaultValue={tag} onChange={handleTagChange} /></li>
+                        return <li key={id}><input key={id} id={id} defaultValue={tag} onChange={handleTagChange} /></li>
                     })}
                 </ul>
                 <button onClick={addTag}>+ Tag</button>
@@ -178,7 +225,7 @@ const EditRecipe = () => {
 
     return (
         <Container className="main">
-            {ingredients && instructions && editForm()}
+            {ingredients && headers && editForm()}
         </Container>
     )
 

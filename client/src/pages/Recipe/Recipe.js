@@ -98,11 +98,19 @@ const Recipe = () => {
                     </ul>
 
                     <h3>Instructions: </h3>
-                    <ol>
+                    <div className="instruction-block">
                         {recipe.instructions.map((instr) => {
-                            return <li key={instr}>{instr}</li>
+                            return <>
+                                <h4 key={instr.header} className="instr-header">{instr.header}</h4>
+                                <ol>
+                                    {instr.steps.map((step) => {
+                                        return <li key={step}>{step}</li>
+                                    })}
+                                </ol>
+
+                            </>
                         })}
-                    </ol>
+                    </div>
 
                     <h3>Tags: </h3>
                     <ul>
@@ -146,6 +154,11 @@ const Container = styled.div`
 
     ul {
         list-style-type: circle;
+    }
+
+    .instruction-block {
+        padding: 0px 30px;
+        border: 2px solid var(--green);
     }
     
     @media (max-width: 600px) {

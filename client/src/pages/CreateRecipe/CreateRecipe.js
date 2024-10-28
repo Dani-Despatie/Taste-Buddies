@@ -10,7 +10,8 @@ const CreateRecipe = () => {
     const { loggedInUser, refreshUser } = useContext(LoggedInUserContext);
     const { refreshRecipes } = useContext(RecipesContext);
     const [ingredients, setIngredients] = useState([""]);
-    const [instructions, setInstructions] = useState([""]);
+    const [headers, setHeaders] = useState([""]);
+    const [steps, setSteps] = useState([[""]]);
     const [tags, setTags] = useState([""]);
     const [status, setStatus] = useState("idle");
     const navigate = useNavigate();
@@ -20,10 +21,27 @@ const CreateRecipe = () => {
         event.preventDefault();
         setIngredients([...ingredients, ""]);
     };
-    const addInstr = (event) => {
+    const addHeader = (event) => {
         event.preventDefault();
-        setInstructions([...instructions, ""]);
+        if (headers === null) {
+            setHeaders(["",""])
+        }
+
+        else if (headers.length < 9) {
+            setHeaders([...headers, ""]);
+            setSteps([...steps, [""]])
+        }
+        else {
+            console.log("Too many sections");
+        }
     };
+    const addStep = (event) => {
+        event.preventDefault();
+        const index = event.target.id.substr(10);
+        const newSteps = [...steps];
+        newSteps[index].push("");
+        setSteps(newSteps);
+    }
     const addTag = (event) => {
         event.preventDefault();
         setTags([...tags, ""]);
@@ -39,6 +57,11 @@ const CreateRecipe = () => {
             return;
         }
 
+        const instructions = [];
+        for (let n=0; n<headers.length; n++) {
+            instructions.push({header: headers[n], steps: steps[n]});
+        }
+
         const recipe = {
             name: event.target.name.value,
             authorName: loggedInUser.userName,
@@ -50,10 +73,11 @@ const CreateRecipe = () => {
             tags
         }
 
+        console.log(recipe);
+
         // Sending to backend
         try {
             const res = await axios.post(`${rootUrl}/recipe`, recipe);
-            console.log(res);
             if (res.status === 201) {
                 setStatus("idle");
                 refreshUser();
@@ -78,13 +102,21 @@ const CreateRecipe = () => {
         newIngredients[index] = event.target.value;
         setIngredients(newIngredients);
     };
-    const handleInstrChange = (event) => {
-        const index = event.target.id.substr(5);
+    const handleHeaderChange = (event) => {
+        const index = event.target.id.substr(6);
 
-        const newInstructions = [...instructions];
-        newInstructions[index] = event.target.value;
-        setInstructions(newInstructions);
+        const newHeaders = [...headers];
+        newHeaders[index] = event.target.value;
+        setHeaders(newHeaders);
     };
+    const handleStepChange = (event) => {
+        const stepIndex = event.target.id.substr(5);
+        const headerIndex = event.target.id[4];
+
+        const newSteps = [...steps];
+        newSteps[headerIndex][stepIndex] = event.target.value;
+        setSteps(newSteps);
+    }
     const handleTagChange = (event) => {
         const index = event.target.id.substr(3);
 
@@ -125,37 +157,43 @@ const CreateRecipe = () => {
                     {ingredients.map((ingr, index) => {
                         const id = `ingr${index}`;
                         return (
-                            <li>
-                                <input key={id} id={id} onChange={handleIngrChange} />
+                            <li key={id}>
+                                <input id={id} onChange={handleIngrChange} />
                             </li>
                         )
                     })}
                 </ul>
                 <button type="button" onClick={addIngr}>+ Input</button>
 
-                <label htmlFor="instr0">Instructions: </label>
-                <ol>
-                {instructions.map((instr, index) => {
-                    const id = `instr${index}`;
-                    return (
-                        <li>
-                            <input key={id} id={id} onChange={handleInstrChange} />
-                        </li>
-                    )
-                })}
-                </ol>
-                <button type="button" onClick={addInstr}>+ Input</button>
+                <label htmlFor="header0">Instructions: </label>
+                <div>
+                    {headers.map((header, index) => {
+                        const id = `header${index}`;
+                        return <ol key={id}>
+                            <input key={id} className="header" id={id} hidden={headers.length === 1} placeholder="Section Name (optional)" onChange={handleHeaderChange}/>
+                            {steps[index].map((step, stepIndex) => {
+                                const stepId = `step${index}${stepIndex}`;
+                                return <li className="steps" key={stepId}>
+                                    <input key={stepId} id={stepId} onChange={handleStepChange}/>
+                                </li>
+                            })}
+                            <button type="button" onClick={addStep} id={`stepButton${index}`} key={index}>+ Step</button>
+                            <br/>
+                        </ol>
+                    })}
+                </div>
+                <button type="button" onClick={addHeader}>+ New Section</button>
 
                 <label htmlFor="tags">Tags: </label>
                 <ul>
-                {tags.map((tag, index) => {
-                    const id = `tag${index}`;
-                    return (
-                        <li>
-                            <input key={id} id={id} onChange={handleTagChange} />
-                        </li>
-                    )
-                })}
+                    {tags.map((tag, index) => {
+                        const id = `tag${index}`;
+                        return (
+                            <li key={id}>
+                                <input key={id} id={id} onChange={handleTagChange} />
+                            </li>
+                        )
+                    })}
                 </ul>
                 <button type="button" onClick={addTag}>+ Tag</button>
 
@@ -243,6 +281,10 @@ const Container = styled.div`
     li {
         margin: 5px;
     }
+    .header {
+        margin-left: -20px;
+    }
+    
 
     .status-message {
         color: var(--red);
