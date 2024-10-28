@@ -113,11 +113,18 @@ const newRecipe = async (req, res) => {
             filteredIngredients.push(ingr);
         }
     });
-    // Validation of instructions list
+
+    // Validation of instructions list (steps shouldn't have blank spaces)
     const filteredInstructions = [];
     instructions.forEach((instr) => {
-        if (instr.length > 0) {
-            filteredInstructions.push(instr);
+        const filteredSteps = [];
+        instr.steps.forEach((step) => {
+            if (step.length > 0) {
+                filteredSteps.push(step);
+            }
+        });
+        if (filteredSteps.length > 0) {
+            filteredInstructions.push({header: instr.header, steps: filteredSteps});
         }
     });
     // Validation of tags list
@@ -127,6 +134,11 @@ const newRecipe = async (req, res) => {
             filteredTags.push(tag);
         }
     });
+
+    if (filteredIngredients.length === 0 || filteredInstructions.length === 0) {
+        res.status(400).json({status: 400, message: "Ingredients and Instructions cannot be left blank"});
+        return;
+    }
 
     // Creating the new recipe object
     const newRecipe = {
@@ -222,8 +234,15 @@ const editRecipe = async (req, res) => {
 
     const filteredInstructions = [];
     instructions.forEach((instr) => {
-        if (instr.length > 0)
-            filteredInstructions.push(instr);
+        const filteredSteps = [];
+        instr.steps.forEach((step) => {
+            if (step.length > 0) {
+                filteredSteps.push(step);
+            }
+        });
+        if (filteredSteps.length > 0) {
+            filteredInstructions.push({header: instr.header, steps: filteredSteps});
+        }
     });
 
     const filteredTags = [];
@@ -231,6 +250,11 @@ const editRecipe = async (req, res) => {
         if (tag.length > 0)
             filteredTags.push(tag);
     });
+
+    if (filteredIngredients.length === 0 || filteredInstructions.length === 0) {
+        res.status(400).json({status: 400, message: "Ingredients and Instructions cannot be left blank"});
+        return;
+    }
 
     const client = new MongoClient(MONGO_URI);
     try {
