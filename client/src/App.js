@@ -15,6 +15,8 @@ import Favourites from "./pages/Favourites/Favourites";
 import CreateRecipe from "./pages/CreateRecipe/CreateRecipe";
 import SignIn from "./pages/SignIn/SignIn";
 import SignUp from "./pages/SignUp/SignUp";
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
+
 
 const App = () => {
 
@@ -34,6 +36,7 @@ const App = () => {
                 <Route path="/create-recipe" element={<CreateRecipe />} />
                 <Route path="/sign-in" element={<SignIn />} />
                 <Route path="/sign-up" element={<SignUp />} />
+                <Route path="/forgotPassword" element={<ForgotPassword />} />
             </Routes>
 
             {/* <Footer/> */}

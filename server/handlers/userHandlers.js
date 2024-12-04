@@ -3,12 +3,26 @@ const bcrypt = require("bcrypt");
 const numSaltRounds = 10;
 const uuid = require("uuid");
 require("dotenv").config();
-const { MONGO_URI } = process.env;
+const { MONGO_URI, EMAIL_ADDRESS, EMAIL_PASSWORD } = process.env;
+const nodemailer = require("nodemailer");
 
 // Names of the Database and Collections (lower risk of typos)
 const DB = "TasteBuddies";
 const users = "users";
 const recipes = "recipes";
+
+// Setup for emailing users
+const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+        user: EMAIL_ADDRESS,
+        pass: EMAIL_PASSWORD
+    }
+})
+
+
 
 // GET Endpoints
 
@@ -45,6 +59,7 @@ const getUser = async (req, res) => {
         const foundUser = await db.collection(users).findOne({ _id: id });
         if (!foundUser) {
             res.status(404).json({ status: 404, message: `User with id ${id} not found` });
+            return;
         }
         else {
             // removing password from the returned data, because it feels more secure
@@ -323,6 +338,71 @@ const autoLogin = async (req, res) => {
     }
 }
 
+const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+    const client = new MongoClient(MONGO_URI);
+
+    // Validating we have the information needed to proceed
+    if (!EMAIL_ADDRESS || !EMAIL_PASSWORD) {
+        res.status(500).json({ status: 500, message: "Email verification was not setup properly, please contact administrator." });
+        return;
+    }
+    if (!email) {
+        res.status(400).json({ status: 400, message: "Email is missing" });
+        return;
+    }
+
+    try {
+        await client.connect();
+        const db = client.db(DB);
+
+        // Validating the user exists
+        const user = await db.collection(users).findOne({ email: email });
+        if (!user) {
+            res.status(404).json({ status: 404, message: "User not found" });
+            return;
+        }
+
+        // Create short code (8 digits?)
+        const code = {
+            number: Math.floor(Math.random()*100000000),
+            time: Date.now()
+        }
+
+        // Append the reset code to the user object(!?)
+        user.passwordRequest = code;
+        const result = await db.collection(users).updateOne( {_id: user._id}, {$set: {passwordResetCode: code}});
+        if (!result || result.modifiedCount === 0) {
+            res.status(400).json({ status: 400, message: "Error occurred while saving recovery code." })
+            return;
+        }
+
+        // Send user email
+        const info = await transporter.sendMail({
+            from: `Taste Buddies`,
+            to: email,
+            subject: "Taste Buddies Password Reset",
+            text: `An attempt was made to change your Taste Buddies Password! If this was you, please input this code on the webpage: ${code.number}. If this was not you, please disregard this email. Toodles!`,
+            html: `<h2>An attempt was made to change your Taste Buddies Password!</h2> <p>If this was you, please input this code on the webpage within the text 2 hours: ${code.number}.</p><p>If this was not you, please disregard this email.</p><p>Toodles!</p>`
+        });
+        if (!info.accepted) {
+            res.status(400).json({ status: 400, message: "Email not sent due to error" });
+            return;
+        }
+        
+        res.status(200).json({ status: 200, message: "Email sent" });
+    } catch (err) {
+        console.log(err);
+        res.status(502).json({ status: 502, message: err.message });
+    } finally {
+        client.close();
+    }
+}
+
+const changePassword = async (req, res) => {
+
+}
+
 
 
 // Exporting Functions: 
@@ -334,5 +414,7 @@ module.exports = {
     addFavourite,
     removeFavourite,
     login,
-    autoLogin
+    autoLogin,
+    forgotPassword,
+
 }

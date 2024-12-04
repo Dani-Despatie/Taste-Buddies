@@ -28,6 +28,11 @@ const SignIn = () => {
         }
     };
 
+    const forgotPasswordHandler = (event) => {
+        event.preventDefault;
+        navigate("/forgotPassword");
+    }
+
     return(
 
         <Container className="main">
@@ -41,7 +46,10 @@ const SignIn = () => {
                 <label htmlFor="password">Password: </label>
                 <input type="password" id="password" />
 
-                <button type="submit" disabled={status === "processing"}>Log In</button>
+                <div className="buttonContainer"> 
+                    <button type="submit" disabled={status === "processing"}>Log In</button>
+                    <button type="button" onClick={forgotPasswordHandler} >Forgot Password</button>
+                </div>
 
             </form>
 
@@ -84,12 +92,19 @@ const Container = styled.div`
         border: 2px solid var(--green);
         border-radius: 5px;
         padding: 3px 15px;
-        margin: 20px;
+        margin: 10px;
         font-family: inherit;
         font-size: 1rem;
     }
     button:hover {
         scale: 1.03;
+    }
+
+    .buttonContainer {
+        margin: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 `;
 

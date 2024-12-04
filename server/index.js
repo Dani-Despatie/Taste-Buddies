@@ -8,7 +8,7 @@ app.use(cors());
 const { MONGO_URI, CLOUDINARY_URL } = process.env;
 
 // require handler functions here
-const { getUsers, getUser, newUser, annotateRecipe, addFavourite, removeFavourite, login, autoLogin } = require("./handlers/userHandlers");
+const { getUsers, getUser, newUser, annotateRecipe, addFavourite, removeFavourite, login, autoLogin, forgotPassword } = require("./handlers/userHandlers");
 const { getRecipes, getRecipe, newRecipe, editRecipe } = require("./handlers/recipeHandlers");
 
 
@@ -32,6 +32,7 @@ app.patch("/autoLogin", autoLogin)
 app.patch("/annotateRecipe", annotateRecipe);
 app.patch("/addFavourite", addFavourite);
 app.patch("/removeFavourite", removeFavourite);
+app.patch("/forgotPassword", forgotPassword)
 
 
 // DELETES
