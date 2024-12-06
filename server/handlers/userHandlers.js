@@ -400,7 +400,63 @@ const forgotPassword = async (req, res) => {
 }
 
 const changePassword = async (req, res) => {
+    const { email, newPassword, codeInput } = req.body;
+    const client = new MongoClient(MONGO_URI);
+    
+    if (!EMAIL_ADDRESS || !EMAIL_PASSWORD) {
+        res.status(500).json({ status: 500, message: "Email verification was not setup properly, please contact administrator." });
+        return;
+    }
 
+    if (!newPassword || !codeInput || !email) {
+        res.status(400).json({ status: 400, message: "Information missing" });
+        return;
+    }
+
+    try {
+        await client.connect();
+        const db = client.db(DB);
+
+        // Getting the user object
+        const user = await db.collection(users).findOne({ email: email });
+        if (!user) {
+            res.status(404).json({ status: 404, message: "User not found" });
+            return;
+        }
+
+        // Validating the reset code
+        if (!user.passwordResetCode || user.passwordResetCode.time - Date.now() > 8640000) {
+            res.status(404).json({ status: 404, message: "No valid reset code" });
+            return;
+        }
+        if (user.passwordResetCode.number !== codeInput) {
+            res.status(400).json({ status: 400, message: "Incorrect reset code" });
+            return;
+        }
+
+        // Encrypting new Password
+        const encNewPassword = await bcrypt.hash(newPassword, numSaltRounds);
+
+        // Updating user in database
+        const result = await db.collection(users).updateOne(
+            { _id: user._id },
+            { $set: { password: encNewPassword, passwordResetCode: null } }
+        );
+
+        if (result.modifiedCount !== 1) {
+            res.status(400).json({ status: 400, message: "Problem resetting password" });
+            return;
+        }
+
+        res.status(200).json({ status: 200, message: "Password changed!" });
+
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ status: 500, message: "Unknown error" });
+    } finally {
+        client.close();
+    }
 }
 
 
@@ -416,5 +472,5 @@ module.exports = {
     login,
     autoLogin,
     forgotPassword,
-
+    changePassword,
 }
